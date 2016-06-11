@@ -13,6 +13,10 @@ There are 3 missing categories from the PASCAL VOC 2012 dataset:
 
 PASCIFAR, thus, covers 17/20 PASCAL VOC 2012 classes.
 
+# Download
+
+A PASCIFAR archive is avaiable here: http://download.nerdz.eu/PASCIFAR.tgz
+
 # Relations
 
 PASCAL VOC 2012 | CIFAR-10 | CIFAR-100
