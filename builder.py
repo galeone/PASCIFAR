@@ -9,6 +9,7 @@
 #licenses expressed under Section 1.12 of the MPL v2.
 """Build the PASCIFAR dataset"""
 
+import csv
 import sys
 import os
 import tarfile
@@ -19,7 +20,8 @@ import numpy as np
 
 # use ship to have something similar to a boat
 # use automobile to replace car
-CIFAR10_LABELS = ["airplane", "automobile", "bird", "cat", "dog", "horse", "ship"]
+CIFAR10_LABELS = ["airplane", "automobile", "bird", "cat", "dog", "horse",
+                  "ship"]
 
 # use couch instead of sofa
 CIFAR100_FINE_LABELS = ["bicycle", "bottle", "bus", "chair", "table",
@@ -47,6 +49,13 @@ CIFAR2PASCAL = {
     "train": "train",
     "television": "tvmonitor",
 }
+
+
+def get_labels():
+    """Returns the PASCAL label associated to the CIFAR label in a list"""
+    labels = [value for value in CIFAR2PASCAL.values()]
+    labels.sort()
+    return labels
 
 
 # Adapted from
@@ -156,6 +165,23 @@ def cifar100(dest, current_dir=os.path.abspath(os.getcwd())):
             counters[label] += 1
 
 
+def write_csv(dest):
+    """Writes the ts.csv file, reading dest content that
+    must be the PASCIFAR folder.
+    ts.csv is saved into dest."""
+    current_dir = os.path.abspath(os.getcwd())
+    with open(dest + "/ts.csv", "w") as csv_file:
+        writer = csv.DictWriter(csv_file, ["file", "label"])
+        writer.writeheader()
+
+        for label_id, label in enumerate(get_labels()):
+            path = dest + "/" + label + "/"
+            images_count = len(next(os.walk(path))[2]) + 1
+            for image in range(1, images_count):
+                relative_path = label + "/" + str(image) + ".png"
+                writer.writerow({"file": relative_path, "label": label_id})
+
+
 def main():
     """Build the PASCAL compatible dataset.
     The resulting dataset containes 17/20 PASCAL compatible classes.
@@ -168,6 +194,7 @@ def main():
         maybe_download_and_extract()
         cifar10(dest)
         cifar100(dest)
+        write_csv(dest)
     else:
         print("PASCIFAR already built. Exit")
 
