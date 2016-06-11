@@ -21,7 +21,7 @@ airplane  | airplane | -
 bicycle  | - | bicycle
 bird  | bird | -
 boat  | ship | -
-bottle | - | food containers (bottles)
+bottle | - | food containers (bottle)
 bus | - | vehicles 1 (bus)
 car | car | -
 cat | cat | -
@@ -34,7 +34,7 @@ motorbike | - | vehicles 1 (motorcycle)
 person | - | people (macroclass)
 pottedplan | - | -
 sheep | - | -
-sofa | - | -
+sofa | - | houseold furniture (couch)
 train | - | vehicles 1 (train)
 tvmonitor | - | household electrical devices (television)
 
@@ -45,6 +45,36 @@ python builder.sh
 ```
 
 It downloads the required CIFAR datasets and build PASCIFAR in the current directory.
+
+# Dataset structure and content
+
+PASCIFAR uses the simplest structure: 1 folder for each class.
+
+Every image is in `.png` format and have the fixed size of the CIFAR dataset: `32x32x3`.
+Each folder has the name of the corresponding PASCAL VOC 2012 class.
+
+Here's the detailed content:
+
+Class | #
+--- | ---
+car | 5000
+boat | 5000
+cat | 5000
+bird | 5000
+sofa | 500
+person | 2500
+bottle | 500
+train | 500
+horse | 5000
+motorbike | 500
+chair | 500
+bus | 500
+dog | 5000
+bicycle | 500
+tvmonitor | 500
+diningtable | 500
+airplane | 5000
+Total | 42000
 
 # Copyright
 

@@ -9,7 +9,6 @@
 #licenses expressed under Section 1.12 of the MPL v2.
 """Build the PASCIFAR dataset"""
 
-
 import sys
 import os
 import tarfile
@@ -18,11 +17,42 @@ from six.moves import urllib
 from PIL import Image
 import numpy as np
 
+# use ship to have something similar to a boat
+# use automobile to replace car
+CIFAR10_LABELS = ["airplane", "automobile", "bird", "cat", "dog", "horse", "ship"]
+
+# use couch instead of sofa
+CIFAR100_FINE_LABELS = ["bicycle", "bottle", "bus", "chair", "table",
+                        "motorcycle", "couch", "train", "television"]
+# use people to replace person
+CIFAR100_COARSE_LABELS = ["people"]
+
+# CIFAR2PASCAL label conversion using a dictionary:
+CIFAR2PASCAL = {
+    "airplane": "airplane",
+    "bicycle": "bicycle",
+    "bird": "bird",
+    "ship": "boat",
+    "bottle": "bottle",
+    "bus": "bus",
+    "automobile": "car",
+    "cat": "cat",
+    "chair": "chair",
+    "table": "diningtable",
+    "dog": "dog",
+    "horse": "horse",
+    "motorcycle": "motorbike",
+    "people": "person",
+    "couch": "sofa",
+    "train": "train",
+    "television": "tvmonitor",
+}
+
+
 # Adapted from
 # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/cifar10/cifar10.py
 def maybe_download_and_extract():
     """Download and extract the tarball from Alex's website."""
-
     dest_directory = os.path.abspath(os.getcwd())
     if not os.path.exists(dest_directory +
                           "/cifar-10-batches-py/") and not os.path.exists(
@@ -53,7 +83,6 @@ def maybe_download_and_extract():
 
 def unpickle(filename):
     """unpickle filename into a dictionary"""
-
     with open(filename, 'rb') as file_open:
         dictionary = pickle.load(file_open, encoding='latin1')
     return dictionary
@@ -63,11 +92,6 @@ def cifar2rgb(line):
     """Creates a valid RGB image from a line of 32*32*3 uint8"""
     return Image.fromarray(np.transpose(
         np.reshape(line, [32, 32, 3], order='F'), [1, 0, 2]))
-
-# use ship to have something similar to a boat
-# use automobile to replace car
-CIFAR10_LABELS = ["airplane", "automobile", "bird", "cat", "dog", "horse",
-                  "ship"]
 
 
 def cifar10(dest, current_dir=os.path.abspath(os.getcwd())):
@@ -79,7 +103,7 @@ def cifar10(dest, current_dir=os.path.abspath(os.getcwd())):
         None.
     """
     for label in CIFAR10_LABELS:
-        os.mkdir(dest + "/" + label)
+        os.mkdir(dest + "/" + CIFAR2PASCAL[label])
 
     counters = {label: 1 for label in CIFAR10_LABELS}
 
@@ -94,15 +118,9 @@ def cifar10(dest, current_dir=os.path.abspath(os.getcwd())):
             label = labels[batch["labels"][idx]]
             if label in CIFAR10_LABELS:
                 image = cifar2rgb(line)
-                image.save(dest + "/" + label + "/" + str(counters[label]) +
-                           ".png")
+                image.save(dest + "/" + CIFAR2PASCAL[label] + "/" + str(
+                    counters[label]) + ".png")
                 counters[label] += 1
-
-# use couch instead of sofa
-CIFAR100_FINE_LABELS = ["bicycle", "bottles", "bus", "chair", "table",
-                        "motorcycle", "couch", "train", "television"]
-# use people to replace person
-CIFAR100_COARSE_LABELS = ["people"]
 
 
 def cifar100(dest, current_dir=os.path.abspath(os.getcwd())):
@@ -115,7 +133,7 @@ def cifar100(dest, current_dir=os.path.abspath(os.getcwd())):
     """
     cifar100_labels = CIFAR100_FINE_LABELS + CIFAR100_COARSE_LABELS
     for label in cifar100_labels:
-        os.mkdir(dest + "/" + label)
+        os.mkdir(dest + "/" + CIFAR2PASCAL[label])
 
     counters = {label: 1 for label in cifar100_labels}
 
@@ -133,8 +151,8 @@ def cifar100(dest, current_dir=os.path.abspath(os.getcwd())):
         if is_fine or is_coarse:
             image = cifar2rgb(line)
             label = fine_label if is_fine else coarse_label
-            image.save(dest + "/" + label + "/" + str(counters[label]) +
-                       ".png")
+            image.save(dest + "/" + CIFAR2PASCAL[label] + "/" + str(counters[
+                label]) + ".png")
             counters[label] += 1
 
 
@@ -142,7 +160,6 @@ def main():
     """Build the PASCAL compatible dataset.
     The resulting dataset containes 17/20 PASCAL compatible classes.
     There are 3 missing classes: cow, pottedplant, sheep."""
-
     current_dir = os.path.abspath(os.getcwd())
     dest = current_dir + "/PASCIFAR"
 
