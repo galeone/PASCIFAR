@@ -50,6 +50,29 @@ CIFAR2PASCAL = {
     "television": "tvmonitor",
 }
 
+PASCAL2PASCIFAR = {
+    "airplane": "airplane",
+    "bicycle": "bicycle",
+    "bird": "bird",
+    "boat": "boat",
+    "bottle": "bottle",
+    "bus": "bus",
+    "car": "car",
+    "cat": "cat",
+    "chair": "chair",
+    "cow": "MISSING",
+    "diningtable": "diningtable",
+    "dog": "dog",
+    "horse": "horse",
+    "motorbike": "motorbike",
+    "person": "person",
+    "pottedplant": "MISSING",
+    "sheep": "MISSING",
+    "sofa": "sofa",
+    "train": "train",
+    "tvmonitor": "tvmonitor",
+}
+
 
 def get_labels():
     """Returns the PASCAL label associated to the CIFAR label in a list"""
@@ -169,7 +192,7 @@ def write_csv(dest):
     """Writes the ts.csv file, reading dest content that
     must be the PASCIFAR folder.
     ts.csv is saved into dest."""
-    current_dir = os.path.abspath(os.getcwd())
+
     with open(dest + "/ts.csv", "w") as csv_file:
         writer = csv.DictWriter(csv_file, ["file", "label"])
         writer.writeheader()
