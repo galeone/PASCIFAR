@@ -5,13 +5,18 @@ Extract the PASCAL VOC 2012 compatible classes from CIFAR 10 and CIFAR 100 train
 
 Creates a new dataset called PASCIFAR (PASCAL + CIFAR) that can be used to test classification algorithms trained on the PASCAL VOC 2012 dataset.
 
-There are 3 missing categories from the PASCAL VOC 2012 dataset:
+There are 4 missing categories from the PASCAL VOC 2012 dataset:
 
 1. cow
 2. pottedplant
 3. sheep
+4. boat
 
-PASCIFAR, thus, covers 17/20 PASCAL VOC 2012 classes.
+PASCIFAR, thus, covers 16/20 PASCAL VOC 2012 classes.
+
+The `ts.csv` file contains the `file/path.png, label_id` where `label_id` has the value that's the position of the label in the PASCAL VOC dataset sorted list of labels.
+
+Using the following format you can avoid to convert labels between datasets.
 
 # Download
 
@@ -24,7 +29,7 @@ PASCAL VOC 2012 | CIFAR-10 | CIFAR-100
 airplane  | airplane | -
 bicycle  | - | bicycle
 bird  | bird | -
-boat  | ship | -
+boat  | - | -
 bottle | - | food containers (bottle)
 bus | - | vehicles 1 (bus)
 car | car | -
@@ -62,7 +67,6 @@ Here's the detailed content:
 Class | #
 --- | ---
 car | 5000
-boat | 5000
 cat | 5000
 bird | 5000
 sofa | 500
@@ -77,7 +81,7 @@ dog | 5000
 bicycle | 500
 tvmonitor | 500
 diningtable | 500
-airplane | 5000
+aeroplane | 5000
 Total | 42000
 
 # Copyright

@@ -14,14 +14,18 @@ import sys
 import os
 import tarfile
 import pickle
-from six.moves import urllib
-from PIL import Image
 import numpy as np
+from PIL import Image
+from six.moves import urllib
 
-# use ship to have something similar to a boat
+# pascal sorted labels
+PASCAL_LABELS = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus",
+                 "car", "cat", "chair", "cow", "diningtable", "dog", "horse",
+                 "motorbike", "person", "pottedplant", "sheep", "sofa",
+                 "train", "tvmonitor"]
+
 # use automobile to replace car
-CIFAR10_LABELS = ["airplane", "automobile", "bird", "cat", "dog", "horse",
-                  "ship"]
+CIFAR10_LABELS = ["airplane", "automobile", "bird", "cat", "dog", "horse"]
 
 # use couch instead of sofa
 CIFAR100_FINE_LABELS = ["bicycle", "bottle", "bus", "chair", "table",
@@ -31,10 +35,9 @@ CIFAR100_COARSE_LABELS = ["people"]
 
 # CIFAR2PASCAL label conversion using a dictionary:
 CIFAR2PASCAL = {
-    "airplane": "airplane",
+    "airplane": "aeroplane",
     "bicycle": "bicycle",
     "bird": "bird",
-    "ship": "boat",
     "bottle": "bottle",
     "bus": "bus",
     "automobile": "car",
@@ -51,32 +54,32 @@ CIFAR2PASCAL = {
 }
 
 PASCAL2PASCIFAR = {
-    "airplane": "airplane",
+    "aeroplane": "airplane",
     "bicycle": "bicycle",
     "bird": "bird",
-    "boat": "boat",
+    "boat": "MISSING",
     "bottle": "bottle",
     "bus": "bus",
     "car": "car",
     "cat": "cat",
     "chair": "chair",
     "cow": "MISSING",
-    "diningtable": "diningtable",
+    "diningtable": "table",
     "dog": "dog",
     "horse": "horse",
-    "motorbike": "motorbike",
-    "person": "person",
+    "motorcycle": "motorbike",
+    "person": "people",
     "pottedplant": "MISSING",
     "sheep": "MISSING",
-    "sofa": "sofa",
+    "sofa": "couch",
     "train": "train",
-    "tvmonitor": "tvmonitor",
+    "tvmonitor": "television",
 }
 
 
 def get_labels():
-    """Returns the PASCAL label associated to the CIFAR label in a list"""
-    labels = [value for value in CIFAR2PASCAL.values()]
+    """Returns the CIFAR labels in a list"""
+    labels = [key for key in CIFAR2PASCAL.keys()]
     labels.sort()
     return labels
 
@@ -95,9 +98,9 @@ def maybe_download_and_extract():
             if not os.path.exists(filepath):
 
                 def _progress(count, block_size, total_size):
-                    sys.stdout.write('\r>> Downloading %s %.1f%%' %
-                                     (filename, float(count * block_size) /
-                                      float(total_size) * 100.0))
+                    sys.stdout.write('\r>> Downloading %s %.1f%%' % (
+                        filename,
+                        float(count * block_size) / float(total_size) * 100.0))
                     sys.stdout.flush()
 
             filepath, _ = urllib.request.urlretrieve(
@@ -197,18 +200,24 @@ def write_csv(dest):
         writer = csv.DictWriter(csv_file, ["file", "label"])
         writer.writeheader()
 
-        for label_id, label in enumerate(get_labels()):
-            path = dest + "/" + label + "/"
+        for label in get_labels():
+            # use pascal label
+            # it creates holes between pascifar labels but
+            # ensure compatibility between the two datasets when using
+            # numeric labels
+            pascal_label = CIFAR2PASCAL[label]
+            label_id = PASCAL_LABELS.index(pascal_label)
+            path = dest + "/" + pascal_label + "/"
             images_count = len(next(os.walk(path))[2]) + 1
             for image in range(1, images_count):
-                relative_path = label + "/" + str(image) + ".png"
+                relative_path = pascal_label + "/" + str(image) + ".png"
                 writer.writerow({"file": relative_path, "label": label_id})
 
 
 def main():
     """Build the PASCAL compatible dataset.
-    The resulting dataset containes 17/20 PASCAL compatible classes.
-    There are 3 missing classes: cow, pottedplant, sheep."""
+    The resulting dataset containes 16/20 PASCAL compatible classes.
+    There are 3 missing classes: boat, cow, pottedplant, sheep"""
     current_dir = os.path.abspath(os.getcwd())
     dest = current_dir + "/PASCIFAR"
 
