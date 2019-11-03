@@ -18,10 +18,6 @@ The `ts.csv` file contains the `file/path.png, label_id` where `label_id` has th
 
 Using the following format you can avoid to convert labels between datasets.
 
-# Download
-
-A PASCIFAR archive is avaiable here: http://download.nerdz.eu/PASCIFAR.tgz
-
 # Relations
 
 PASCAL VOC 2012 | CIFAR-10 | CIFAR-100
